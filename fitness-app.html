@@ -1,0 +1,605 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Fitness Planner - Planificador Semanal</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: "Arial", sans-serif;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        min-height: 100vh;
+        padding: 20px;
+      }
+
+      .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        background: white;
+        border-radius: 15px;
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+        overflow: hidden;
+      }
+
+      .header {
+        background: linear-gradient(45deg, #ff6b6b, #ee5a24);
+        color: white;
+        padding: 30px;
+        text-align: center;
+      }
+
+      .header h1 {
+        font-size: 2.5rem;
+        margin-bottom: 10px;
+      }
+
+      .main-content {
+        display: grid;
+        grid-template-columns: 1fr 2fr;
+        gap: 30px;
+        padding: 30px;
+      }
+
+      .form-section {
+        background: #f8f9fa;
+        padding: 25px;
+        border-radius: 10px;
+        height: fit-content;
+      }
+
+      .form-section h2 {
+        color: #333;
+        margin-bottom: 20px;
+        font-size: 1.5rem;
+      }
+
+      .form-group {
+        margin-bottom: 20px;
+      }
+
+      label {
+        display: block;
+        margin-bottom: 8px;
+        font-weight: bold;
+        color: #555;
+      }
+
+      input,
+      select {
+        width: 100%;
+        padding: 12px;
+        border: 2px solid #ddd;
+        border-radius: 8px;
+        font-size: 16px;
+        transition: border-color 0.3s;
+      }
+
+      input:focus,
+      select:focus {
+        outline: none;
+        border-color: #667eea;
+      }
+
+      .time-inputs {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 10px;
+      }
+
+      .btn {
+        background: linear-gradient(45deg, #667eea, #764ba2);
+        color: white;
+        border: none;
+        padding: 15px 30px;
+        border-radius: 8px;
+        font-size: 16px;
+        font-weight: bold;
+        cursor: pointer;
+        transition: transform 0.2s;
+        width: 100%;
+      }
+
+      .btn:hover {
+        transform: translateY(-2px);
+      }
+
+      .weekly-planner {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 20px;
+      }
+
+      .day-card {
+        background: white;
+        border: 2px solid #e9ecef;
+        border-radius: 10px;
+        overflow: hidden;
+        transition: transform 0.2s;
+      }
+
+      .day-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+      }
+
+      .day-header {
+        background: linear-gradient(45deg, #74b9ff, #0984e3);
+        color: white;
+        padding: 15px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      .day-header h3 {
+        font-size: 1.2rem;
+      }
+
+      .day-checkbox {
+        width: 20px;
+        height: 20px;
+        cursor: pointer;
+      }
+
+      .routine-content {
+        padding: 20px;
+      }
+
+      .routine-info {
+        background: #e3f2fd;
+        padding: 15px;
+        border-radius: 8px;
+        margin-bottom: 15px;
+      }
+
+      .routine-title {
+        font-weight: bold;
+        color: #1565c0;
+        margin-bottom: 5px;
+      }
+
+      .routine-duration {
+        color: #666;
+        font-size: 0.9rem;
+      }
+
+      .exercise-list {
+        list-style: none;
+      }
+
+      .exercise-item {
+        background: #f8f9fa;
+        margin-bottom: 10px;
+        padding: 15px;
+        border-radius: 8px;
+        border-left: 4px solid #28a745;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      .exercise-details {
+        flex: 1;
+      }
+
+      .exercise-name {
+        font-weight: bold;
+        color: #333;
+        margin-bottom: 5px;
+      }
+
+      .exercise-specs {
+        color: #666;
+        font-size: 0.9rem;
+      }
+
+      .exercise-checkbox {
+        width: 18px;
+        height: 18px;
+        cursor: pointer;
+      }
+
+      .completed {
+        opacity: 0.6;
+        text-decoration: line-through;
+      }
+
+      .no-routine {
+        text-align: center;
+        color: #999;
+        padding: 40px;
+        font-style: italic;
+      }
+
+      @media (max-width: 768px) {
+        .main-content {
+          grid-template-columns: 1fr;
+          gap: 20px;
+          padding: 20px;
+        }
+
+        .header h1 {
+          font-size: 2rem;
+        }
+
+        .weekly-planner {
+          grid-template-columns: 1fr;
+        }
+
+        .time-inputs {
+          grid-template-columns: 1fr;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="header">
+        <h1>💪 Fitness Planner</h1>
+        <p>Tu planificador semanal de entrenamientos personalizado</p>
+      </div>
+
+      <div class="main-content">
+        <div class="form-section">
+          <h2>🎯 Generar Rutina</h2>
+          <form id="routineForm">
+            <div class="form-group">
+              <label>⏱️ Tiempo Disponible:</label>
+              <div class="time-inputs">
+                <input
+                  type="number"
+                  id="hours"
+                  placeholder="Horas"
+                  min="0"
+                  max="5"
+                  value="1"
+                />
+                <input
+                  type="number"
+                  id="minutes"
+                  placeholder="Minutos"
+                  min="0"
+                  max="59"
+                  step="15"
+                  value="0"
+                />
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="bodyPart">🎯 Parte del Cuerpo:</label>
+              <select id="bodyPart" required>
+                <option value="">Selecciona una opción</option>
+                <option value="pecho">Pecho</option>
+                <option value="espalda">Espalda</option>
+                <option value="piernas">Piernas</option>
+                <option value="brazos">Brazos</option>
+                <option value="hombros">Hombros</option>
+                <option value="abdomen">Abdomen</option>
+                <option value="cuerpo-completo">Cuerpo Completo</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label for="selectedDay">📅 Día de la Semana:</label>
+              <select id="selectedDay" required>
+                <option value="">Selecciona un día</option>
+                <option value="lunes">Lunes</option>
+                <option value="martes">Martes</option>
+                <option value="miercoles">Miércoles</option>
+                <option value="jueves">Jueves</option>
+                <option value="viernes">Viernes</option>
+                <option value="sabado">Sábado</option>
+                <option value="domingo">Domingo</option>
+              </select>
+            </div>
+
+            <button type="submit" class="btn">🚀 Generar Rutina</button>
+          </form>
+        </div>
+
+        <div class="weekly-planner" id="weeklyPlanner">
+          <div class="day-card" data-day="lunes">
+            <div class="day-header">
+              <h3>Lunes</h3>
+              <input type="checkbox" class="day-checkbox" data-day="lunes" />
+            </div>
+            <div class="routine-content">
+              <div class="no-routine">Sin rutina asignada</div>
+            </div>
+          </div>
+
+          <div class="day-card" data-day="martes">
+            <div class="day-header">
+              <h3>Martes</h3>
+              <input type="checkbox" class="day-checkbox" data-day="martes" />
+            </div>
+            <div class="routine-content">
+              <div class="no-routine">Sin rutina asignada</div>
+            </div>
+          </div>
+
+          <div class="day-card" data-day="miercoles">
+            <div class="day-header">
+              <h3>Miércoles</h3>
+              <input
+                type="checkbox"
+                class="day-checkbox"
+                data-day="miercoles"
+              />
+            </div>
+            <div class="routine-content">
+              <div class="no-routine">Sin rutina asignada</div>
+            </div>
+          </div>
+
+          <div class="day-card" data-day="jueves">
+            <div class="day-header">
+              <h3>Jueves</h3>
+              <input type="checkbox" class="day-checkbox" data-day="jueves" />
+            </div>
+            <div class="routine-content">
+              <div class="no-routine">Sin rutina asignada</div>
+            </div>
+          </div>
+
+          <div class="day-card" data-day="viernes">
+            <div class="day-header">
+              <h3>Viernes</h3>
+              <input type="checkbox" class="day-checkbox" data-day="viernes" />
+            </div>
+            <div class="routine-content">
+              <div class="no-routine">Sin rutina asignada</div>
+            </div>
+          </div>
+
+          <div class="day-card" data-day="sabado">
+            <div class="day-header">
+              <h3>Sábado</h3>
+              <input type="checkbox" class="day-checkbox" data-day="sabado" />
+            </div>
+            <div class="routine-content">
+              <div class="no-routine">Sin rutina asignada</div>
+            </div>
+          </div>
+
+          <div class="day-card" data-day="domingo">
+            <div class="day-header">
+              <h3>Domingo</h3>
+              <input type="checkbox" class="day-checkbox" data-day="domingo" />
+            </div>
+            <div class="routine-content">
+              <div class="no-routine">Sin rutina asignada</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      const exerciseDatabase = {
+        pecho: [
+          { name: "Flexiones", series: 3, reps: "12-15", time: 8 },
+          { name: "Press de banca", series: 4, reps: "8-10", time: 12 },
+          {
+            name: "Aperturas con mancuernas",
+            series: 3,
+            reps: "10-12",
+            time: 10,
+          },
+          { name: "Fondos en paralelas", series: 3, reps: "8-12", time: 9 },
+          { name: "Press inclinado", series: 3, reps: "10-12", time: 11 },
+        ],
+        espalda: [
+          { name: "Dominadas", series: 3, reps: "6-10", time: 10 },
+          { name: "Remo con barra", series: 4, reps: "8-10", time: 12 },
+          { name: "Jalones al pecho", series: 3, reps: "10-12", time: 9 },
+          { name: "Remo con mancuerna", series: 3, reps: "10-12", time: 8 },
+          { name: "Peso muerto", series: 4, reps: "6-8", time: 15 },
+        ],
+        piernas: [
+          { name: "Sentadillas", series: 4, reps: "12-15", time: 12 },
+          { name: "Peso muerto rumano", series: 3, reps: "10-12", time: 11 },
+          { name: "Zancadas", series: 3, reps: "12-15", time: 10 },
+          {
+            name: "Extensiones de cuádriceps",
+            series: 3,
+            reps: "12-15",
+            time: 8,
+          },
+          { name: "Curl de femoral", series: 3, reps: "10-12", time: 8 },
+          { name: "Elevaciones de gemelos", series: 4, reps: "15-20", time: 6 },
+        ],
+        brazos: [
+          { name: "Curl de bíceps", series: 3, reps: "10-12", time: 7 },
+          { name: "Press francés", series: 3, reps: "10-12", time: 8 },
+          { name: "Martillo", series: 3, reps: "10-12", time: 7 },
+          { name: "Fondos en banco", series: 3, reps: "10-15", time: 6 },
+          { name: "Curl concentrado", series: 3, reps: "8-10", time: 6 },
+        ],
+        hombros: [
+          { name: "Press militar", series: 4, reps: "8-10", time: 10 },
+          { name: "Elevaciones laterales", series: 3, reps: "12-15", time: 7 },
+          { name: "Elevaciones frontales", series: 3, reps: "10-12", time: 6 },
+          { name: "Pájaros", series: 3, reps: "12-15", time: 8 },
+          { name: "Encogimientos", series: 3, reps: "12-15", time: 5 },
+        ],
+        abdomen: [
+          { name: "Crunches", series: 3, reps: "15-20", time: 5 },
+          { name: "Plancha", series: 3, reps: "30-60s", time: 4 },
+          { name: "Bicicleta", series: 3, reps: "20-30", time: 6 },
+          { name: "Elevaciones de piernas", series: 3, reps: "12-15", time: 5 },
+          { name: "Russian twists", series: 3, reps: "20-30", time: 5 },
+        ],
+        "cuerpo-completo": [
+          { name: "Burpees", series: 3, reps: "8-12", time: 8 },
+          { name: "Sentadillas con salto", series: 3, reps: "12-15", time: 6 },
+          { name: "Flexiones", series: 3, reps: "10-15", time: 7 },
+          { name: "Mountain climbers", series: 3, reps: "20-30", time: 5 },
+          { name: "Plancha", series: 3, reps: "30-45s", time: 4 },
+          { name: "Jumping jacks", series: 3, reps: "30-45", time: 4 },
+        ],
+      };
+
+      let weeklyRoutines = {};
+
+      function generateRoutine(timeInMinutes, bodyPart) {
+        const exercises = exerciseDatabase[bodyPart];
+        if (!exercises) return null;
+
+        let selectedExercises = [];
+        let totalTime = 0;
+        let availableExercises = [...exercises];
+
+        // Seleccionar ejercicios que quepan en el tiempo disponible
+        while (totalTime < timeInMinutes && availableExercises.length > 0) {
+          const randomIndex = Math.floor(
+            Math.random() * availableExercises.length
+          );
+          const exercise = availableExercises[randomIndex];
+
+          if (totalTime + exercise.time <= timeInMinutes) {
+            selectedExercises.push(exercise);
+            totalTime += exercise.time;
+          }
+
+          availableExercises.splice(randomIndex, 1);
+        }
+
+        // Asegurar al menos un ejercicio si hay tiempo suficiente
+        if (selectedExercises.length === 0 && exercises.length > 0) {
+          const shortestExercise = exercises.reduce((prev, curr) =>
+            prev.time < curr.time ? prev : curr
+          );
+          if (shortestExercise.time <= timeInMinutes) {
+            selectedExercises.push(shortestExercise);
+            totalTime = shortestExercise.time;
+          }
+        }
+
+        return {
+          title: `Entrenamiento de ${
+            bodyPart.charAt(0).toUpperCase() + bodyPart.slice(1)
+          }`,
+          duration: `${Math.floor(totalTime / 60)}h ${totalTime % 60}min`,
+          exercises: selectedExercises,
+        };
+      }
+
+      function renderRoutine(day, routine) {
+        const dayCard = document.querySelector(`[data-day="${day}"]`);
+        const routineContent = dayCard.querySelector(".routine-content");
+
+        if (!routine) {
+          routineContent.innerHTML =
+            '<div class="no-routine">Sin rutina asignada</div>';
+          return;
+        }
+
+        const exercisesList = routine.exercises
+          .map(
+            (exercise, index) => `
+                <li class="exercise-item">
+                    <div class="exercise-details">
+                        <div class="exercise-name">${exercise.name}</div>
+                        <div class="exercise-specs">${exercise.series} series × ${exercise.reps} repeticiones</div>
+                    </div>
+                    <input type="checkbox" class="exercise-checkbox" data-day="${day}" data-exercise="${index}">
+                </li>
+            `
+          )
+          .join("");
+
+        routineContent.innerHTML = `
+                <div class="routine-info">
+                    <div class="routine-title">${routine.title}</div>
+                    <div class="routine-duration">⏱️ Duración estimada: ${routine.duration}</div>
+                </div>
+                <ul class="exercise-list">
+                    ${exercisesList}
+                </ul>
+            `;
+      }
+
+      // Event Listeners
+      document
+        .getElementById("routineForm")
+        .addEventListener("submit", function (e) {
+          e.preventDefault();
+
+          const hours = parseInt(document.getElementById("hours").value) || 0;
+          const minutes =
+            parseInt(document.getElementById("minutes").value) || 0;
+          const bodyPart = document.getElementById("bodyPart").value;
+          const selectedDay = document.getElementById("selectedDay").value;
+
+          if (!bodyPart || !selectedDay) {
+            alert("Por favor, completa todos los campos requeridos.");
+            return;
+          }
+
+          const totalMinutes = hours * 60 + minutes;
+
+          if (totalMinutes < 10) {
+            alert("El tiempo mínimo debe ser de 10 minutos.");
+            return;
+          }
+
+          const routine = generateRoutine(totalMinutes, bodyPart);
+
+          if (!routine || routine.exercises.length === 0) {
+            alert(
+              "No se pudo generar una rutina con el tiempo especificado. Intenta con más tiempo."
+            );
+            return;
+          }
+
+          weeklyRoutines[selectedDay] = routine;
+          renderRoutine(selectedDay, routine);
+
+          // Reset form
+          document.getElementById("selectedDay").value = "";
+        });
+
+      // Checkbox handlers
+      document.addEventListener("change", function (e) {
+        if (e.target.classList.contains("day-checkbox")) {
+          const day = e.target.dataset.day;
+          const dayCard = document.querySelector(`[data-day="${day}"]`);
+          const exerciseCheckboxes =
+            dayCard.querySelectorAll(".exercise-checkbox");
+
+          exerciseCheckboxes.forEach((checkbox) => {
+            checkbox.checked = e.target.checked;
+            const exerciseItem = checkbox.closest(".exercise-item");
+            exerciseItem.classList.toggle("completed", checkbox.checked);
+          });
+        }
+
+        if (e.target.classList.contains("exercise-checkbox")) {
+          const exerciseItem = e.target.closest(".exercise-item");
+          exerciseItem.classList.toggle("completed", e.target.checked);
+
+          const day = e.target.dataset.day;
+          const dayCard = document.querySelector(`[data-day="${day}"]`);
+          const dayCheckbox = dayCard.querySelector(".day-checkbox");
+          const exerciseCheckboxes =
+            dayCard.querySelectorAll(".exercise-checkbox");
+          const checkedExercises = dayCard.querySelectorAll(
+            ".exercise-checkbox:checked"
+          );
+
+          dayCheckbox.checked =
+            exerciseCheckboxes.length === checkedExercises.length &&
+            exerciseCheckboxes.length > 0;
+        }
+      });
+    </script>
+  </body>
+</html>
